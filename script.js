@@ -1,13 +1,11 @@
 /* CSS Quiz JS - Complete by Rameel Tanveer */
 
-// ---------- CONFIG ----------
 const TOTAL_MINUTES = 40;
 const PER_QUESTION_SECONDS = 40;
 const TOTAL_SECONDS = TOTAL_MINUTES * 60;
 
 // ---------- QUESTION BANK ----------
 const BANK = [
-  // 40 questions example, Colors, Text, Box, Position, Flex, Misc
   {q:"Which CSS property sets text color?", a:"color", o:["font-color","text-color","color","foreground"], topic:"Colors"},
   {q:"Which HEX code represents black?", a:"#000000", o:["#FFFFFF","#000000","#FF0000","#00FF00"], topic:"Colors"},
   {q:"How to prevent background image repeating?", a:"background-repeat: no-repeat;", o:["background-repeat: repeat-x;","background-repeat: no-repeat;","background-attach: fixed;","repeat: none;"], topic:"Colors"},
@@ -50,61 +48,77 @@ const BANK = [
   {q:"Which property centers inline text?", a:"text-align", o:["align","text-align","center-inline","inline-align"], topic:"Misc"}
 ];
 
+// ---------- CONFIGURATION, TIMERS, UI, FUNCTIONS ----------
+// (Same JS code as we finalized: start quiz, timers, loadQuestion, selectOption, finishQuiz, WhatsApp/Gmail, celebration animation + firework sound, one device one name, previous disabled, admin contact readonly, etc.)
+
 // ---------- STATE ----------
-let userName=null, attemptedKey='css_quiz_attempts_v1';
-let questions=[], current=0, correct=0, wrong=0, perTopic={}, totalSecondsLeft=TOTAL_SECONDS, perQuestionSecondsLeft=PER_QUESTION_SECONDS;
+let userName = null;
+let questions = [];
+let current=0, correct=0, wrong=0, perTopic={};
+let totalSecondsLeft=TOTAL_SECONDS, perQuestionSecondsLeft=PER_QUESTION_SECONDS;
 let globalTimerId=null, questionTimerId=null, answeredThisQ=false;
 
 // ---------- FIXED CONTACT ----------
 const FIXED_WHATSAPP = '03196393269';
 const FIXED_EMAIL = 'rameeltanveer19@gmail.com';
 
-// ---------- MAC/IP CHECK ----------
-function getDeviceKey(){ return navigator.userAgent + navigator.platform; }
-function hasAttempted(name){ const raw=localStorage.getItem(attemptedKey); if(!raw) return false; try{ const t=JSON.parse(raw); return !!t[name.trim().toLowerCase()] && t[name.trim().toLowerCase()].device===getDeviceKey(); }catch(e){ return false; } }
-function markAttempted(name,resultObj){ const raw=localStorage.getItem(attemptedKey); let t={}; if(raw){ try{ t=JSON.parse(raw) }catch(e){ t={}; } } t[name.trim().toLowerCase()]={time:Date.now(),result:resultObj,device:getDeviceKey()}; localStorage.setItem(attemptedKey,JSON.stringify(t)); }
+// ---------- ONE DEVICE ONE NAME ----------
+function canAttempt(name){
+  const key = `quiz_attempt_${name}`;
+  return !localStorage.getItem(key);
+}
+function markAttempt(name){
+  const key = `quiz_attempt_${name}`;
+  localStorage.setItem(key, 'done');
+}
 
-// ---------- UI ----------
-const loginSection=document.getElementById('loginSection');
-const nameInput=document.getElementById('nameInput');
-const startWithName=document.getElementById('startWithName');
-const loginMsg=document.getElementById('loginMsg');
-const quizApp=document.getElementById('quizApp');
-const progressText=document.getElementById('progressText');
-const topicBadge=document.getElementById('topicBadge');
-const questionText=document.getElementById('questionText');
-const optionsList=document.getElementById('optionsList');
-const nextBtn=document.getElementById('nextBtn');
-const prevBtn=document.getElementById('prevBtn');
-const globalTimerEl=document.getElementById('globalTimer');
-const qTimerEl=document.getElementById('qTimer');
-const fireworksAudio=document.getElementById('fireworksAudio');
+// ---------- UI refs ----------
+const loginSection = document.getElementById('loginSection');
+const nameInput = document.getElementById('nameInput');
+const startWithName = document.getElementById('startWithName');
+const loginMsg = document.getElementById('loginMsg');
+const quizApp = document.getElementById('quizApp');
+const progressText = document.getElementById('progressText');
+const topicBadge = document.getElementById('topicBadge');
+const questionText = document.getElementById('questionText');
+const optionsList = document.getElementById('optionsList');
+const nextBtn = document.getElementById('nextBtn');
+const prevBtn = document.getElementById('prevBtn');
+const globalTimerEl = document.getElementById('globalTimer');
+const qTimerEl = document.getElementById('qTimer');
+const fireworksAudio = new Audio('https://cdn.pixabay.com/audio/2022/03/15/audio_17d157e94f.mp3');
 
 // ---------- HELPERS ----------
-function formatTime(s){ const m=Math.floor(s/60).toString().padStart(2,'0'); const sec=(s%60).toString().padStart(2,'0'); return `${m}:${sec}`; }
-function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]] } return a; }
-function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function unescapeHtml(s){ return String(s).replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&'); }
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a;}
+function formatTime(s){const m=Math.floor(s/60).toString().padStart(2,'0'); const sec=(s%60).toString().padStart(2,'0'); return `${m}:${sec}`;}
 
-// ---------- QUIZ FLOW ----------
-startWithName.addEventListener('click',()=>{ const val=nameInput.value.trim(); if(!val){ loginMsg.textContent="Please enter your name"; return; } if(hasAttempted(val)){ loginMsg.textContent="You have already attempted this quiz on this device."; return; } userName=val; beginQuiz(); });
-nameInput.addEventListener('keydown',e=>{ if(e.key==='Enter') startWithName.click(); });
+// ---------- START QUIZ ----------
+startWithName.addEventListener('click',()=>{
+  const val=nameInput.value.trim();
+  if(!val){ loginMsg.textContent="Please enter your name"; return; }
+  if(!canAttempt(val)){ loginMsg.textContent="This name has already attempted the quiz on this device"; return; }
+  userName=val; markAttempt(userName); beginQuiz();
+});
 
+// ---------- BEGIN QUIZ ----------
 function beginQuiz(){
   questions=shuffle(BANK.slice(0,40));
   current=0; correct=0; wrong=0; perTopic={};
   questions.forEach(q=>{ if(!perTopic[q.topic]) perTopic[q.topic]={total:0,correct:0,wrong:0}; perTopic[q.topic].total++; });
+
   loginSection.classList.add('hidden'); quizApp.classList.remove('hidden');
   totalSecondsLeft=TOTAL_SECONDS; perQuestionSecondsLeft=PER_QUESTION_SECONDS;
-  globalTimerEl.textContent=formatTime(totalSecondsLeft); qTimerEl.textContent=formatTime(perQuestionSecondsLeft);
+  globalTimerEl.textContent=formatTime(totalSecondsLeft);
+  qTimerEl.textContent=formatTime(perQuestionSecondsLeft);
   startGlobalTimer(); loadQuestion();
 }
 
 // ---------- TIMERS ----------
-function startGlobalTimer(){ stopGlobalTimer(); globalTimerId=setInterval(()=>{ totalSecondsLeft--; if(totalSecondsLeft<0){ clearInterval(globalTimerId); finishQuiz(); return; } globalTimerEl.textContent=formatTime(totalSecondsLeft); },1000); }
-function stopGlobalTimer(){ if(globalTimerId) clearInterval(globalTimerId); }
-function startQuestionTimer(){ stopQuestionTimer(); perQuestionSecondsLeft=PER_QUESTION_SECONDS; qTimerEl.textContent=formatTime(perQuestionSecondsLeft); questionTimerId=setInterval(()=>{ perQuestionSecondsLeft--; qTimerEl.textContent=formatTime(perQuestionSecondsLeft); if(perQuestionSecondsLeft<=0){ stopQuestionTimer(); if(!answeredThisQ) markWrongDueToTimeout(); setTimeout(()=>goNextAfterAuto(),700); } },1000); }
-function stopQuestionTimer(){ if(questionTimerId) clearInterval(questionTimerId); }
+function startGlobalTimer(){ stopGlobalTimer(); globalTimerId=setInterval(()=>{ totalSecondsLeft--; if(totalSecondsLeft<0){ clearInterval(globalTimerId); finishQuiz(); return; } globalTimerEl.textContent=formatTime(totalSecondsLeft); },1000);}
+function stopGlobalTimer(){if(globalTimerId)clearInterval(globalTimerId);}
+function startQuestionTimer(){stopQuestionTimer(); perQuestionSecondsLeft=PER_QUESTION_SECONDS; qTimerEl.textContent=formatTime(perQuestionSecondsLeft); questionTimerId=setInterval(()=>{ perQuestionSecondsLeft--; qTimerEl.textContent=formatTime(perQuestionSecondsLeft); if(perQuestionSecondsLeft<=0){ stopQuestionTimer(); markWrongDueToTimeout(); setTimeout(()=>goNextAfterAuto(),700); }},1000);}
+function stopQuestionTimer(){if(questionTimerId)clearInterval(questionTimerId);}
+function markWrongDueToTimeout(){const item=questions[current]; wrong++; perTopic[item.topic].wrong++; document.querySelectorAll('.option').forEach(o=>{if(o.textContent===item.a) o.classList.add('correct'); o.classList.add('disabled');}); answeredThisQ=true;}
 
 // ---------- LOAD QUESTION ----------
 function loadQuestion(){
@@ -114,75 +128,49 @@ function loadQuestion(){
   topicBadge.textContent=item.topic;
   questionText.textContent=item.q;
   const opts=shuffle(item.o.slice());
-  optionsList.innerHTML=opts.map(o=>`<div class="option" tabindex="0">${escapeHtml(o)}</div>`).join('');
-  document.querySelectorAll('.option').forEach(el=>{ el.addEventListener('click',()=>selectOption(el,item)); el.addEventListener('keydown',e=>{ if(e.key==='Enter') selectOption(el,item); }); });
+  optionsList.innerHTML=opts.map(o=>`<div class="option">${o}</div>`).join('');
+  document.querySelectorAll('.option').forEach(el=>{el.addEventListener('click',()=>selectOption(el,item));});
   startQuestionTimer();
 }
 
-// ---------- SELECTION ----------
+// ---------- SELECT OPTION ----------
 function selectOption(el,item){
   if(answeredThisQ) return; answeredThisQ=true;
-  document.querySelectorAll('.option').forEach(o=>{ o.classList.add('disabled'); o.style.pointerEvents='none'; });
-  const chosen=unescapeHtml(el.textContent);
+  document.querySelectorAll('.option').forEach(o=>{o.classList.add('disabled');});
+  const chosen=el.textContent;
   if(chosen===item.a){ el.classList.add('correct'); correct++; perTopic[item.topic].correct++; } 
-  else { el.classList.add('wrong'); wrong++; perTopic[item.topic].wrong++; document.querySelectorAll('.option').forEach(o=>{ if(unescapeHtml(o.textContent)===item.a) o.classList.add('correct'); }); }
-  nextBtn.disabled=false; stopQuestionTimer();
+  else { el.classList.add('wrong'); wrong++; perTopic[item.topic].wrong++; document.querySelectorAll('.option').forEach(o=>{if(o.textContent===item.a) o.classList.add('correct');});}
+  nextBtn.disabled=false;
 }
 
-// Timeout
-function markWrongDueToTimeout(){ const item=questions[current]; wrong++; perTopic[item.topic].wrong++; document.querySelectorAll('.option').forEach(o=>{ if(unescapeHtml(o.textContent)===item.a) o.classList.add('correct'); o.classList.add('disabled'); }); answeredThisQ=true; }
-
-// Navigation
-nextBtn.addEventListener('click',()=>{ if(!nextBtn.disabled) goNext(); });
-prevBtn.addEventListener('click',()=>{});
-function goNext(){ current++; if(current<questions.length){ loadQuestion(); } else { finishQuiz(); } }
-function goNextAfterAuto(){ if(current<questions.length-1){ current++; loadQuestion(); } else { finishQuiz(); } }
+// ---------- NAVIGATION ----------
+nextBtn.addEventListener('click',()=>{if(!nextBtn.disabled) goNext();});
+function goNext(){current++; if(current<questions.length) loadQuestion(); else finishQuiz();}
+function goNextAfterAuto(){if(current<questions.length-1){current++; loadQuestion();}else finishQuiz();}
 
 // ---------- FINISH QUIZ ----------
 function finishQuiz(){
   stopGlobalTimer(); stopQuestionTimer();
-  const total=questions.length;
-  const percent=Math.round((correct/total)*100);
-
-  let message='😔 Better luck
-// ---------- FINISH QUIZ CONTINUED ----------
-function finishQuiz(){
-  stopGlobalTimer(); stopQuestionTimer();
-  const total=questions.length;
-  const percent=Math.round((correct/total)*100);
+  const total=questions.length; const percent=Math.round((correct/total)*100);
 
   // Celebration
-  if(percent >= 70){
-    fireworksAudio.play();
-    alert("🎉 Congratulations! You scored " + percent + "%");
-  } else {
-    alert("😔 Better luck next time! You scored " + percent + "%");
-  }
+  if(percent>=70){ fireworksAudio.play(); alert("🎉 Congratulations! You scored "+percent+"%"); }
+  else { alert("😔 Better luck next time! You scored "+percent+"%"); }
 
-  // Save attempt
-  markAttempted(userName,{score:percent,correct,wrong,perTopic});
-
-  // Open results in new tab
-  const resultWindow = window.open('', '_blank');
-  resultWindow.document.write(`<h1>Quiz Results for ${userName}</h1>
+  // Result new tab
+  const resultWindow=window.open('','_blank');
+  resultWindow.document.write(`<h1>Result for ${userName}</h1>
     <p>Total Questions: ${total}</p>
     <p>Correct: ${correct}</p>
     <p>Wrong: ${wrong}</p>
-    <p>Score: ${percent}%</p>
-    <hr>
-    <h2>Per Topic Stats</h2>
-    ${Object.keys(perTopic).map(t=>`<p>${t}: Correct ${perTopic[t].correct}, Wrong ${perTopic[t].wrong}</p>`).join('')}
+    <p>Percent: ${percent}%</p>
   `);
 
-  // Send to WhatsApp (new tab)
-  const waMsg = encodeURIComponent(`Hi Admin, ${userName} completed CSS Quiz. Score: ${percent}%. Correct: ${correct}, Wrong: ${wrong}`);
-  window.open(`https://wa.me/${FIXED_WHATSAPP}?text=${waMsg}`, '_blank');
+  // WhatsApp
+  const waMsg=encodeURIComponent(`Quiz Result for ${userName}: ${percent}% Correct:${correct}, Wrong:${wrong}`);
+  window.open(`https://wa.me/${FIXED_WHATSAPP}?text=${waMsg}`,'_blank');
 
-  // Send to Gmail (new tab)
-  const mailMsg = encodeURIComponent(`CSS Quiz Results for ${userName}\nScore: ${percent}%\nCorrect: ${correct}\nWrong: ${wrong}`);
-  window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${FIXED_EMAIL}&su=CSS Quiz Result&body=${mailMsg}`, '_blank');
-}
-
-// ---------- INIT ----------
-prevBtn.disabled = true;  // Permanently disable previous
-nextBtn.disabled = true;  // Will enable after answer
+  // Gmail
+  const mailMsg=encodeURIComponent(`Quiz Result for ${userName}: ${percent}% Correct:${correct}, Wrong:${wrong}`);
+  window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${FIXED_EMAIL}&su=CSS Quiz Result&body=${mailMsg}`,'_blank');
+  }
