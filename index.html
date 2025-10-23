@@ -1,44 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CSS Quiz - Rameel</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CSS Quiz by Rameel Tanveer</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <section id="loginSection">
-      <h1>Enter Your Name</h1>
-      <input type="text" id="nameInput" placeholder="Type your name here">
-      <button id="startWithName">Start Quiz</button>
-      <p id="loginMsg" class="msg"></p>
-      
-      <!-- Admin contact placeholder -->
-      <h2>Admin Contact</h2>
-      <input type="text" value="03196393269" readonly class="adminField">
-      <p>Admin Email: rameeltanveer19@gmail.com (for admin use only)</p>
-    </section>
+  <div id="loginSection">
+    <h1>Enter Your Name</h1>
+    <input type="text" id="nameInput" placeholder="Your Name" />
+    <button id="startWithName">Start Quiz</button>
+    <p id="loginMsg"></p>
 
-    <section id="quizApp" class="hidden">
-      <div class="quiz-header">
-        <span id="progressText"></span>
-        <span id="topicBadge"></span>
-      </div>
-      <div id="questionText" class="question"></div>
-      <div id="optionsList" class="options"></div>
-      <div class="quiz-footer">
-        <button id="prevBtn" disabled>Previous</button>
-        <button id="nextBtn" disabled>Next</button>
-      </div>
-      <div class="timers">
-        <span>Quiz Timer: <span id="globalTimer">00:00</span></span>
-        <span>Question Timer: <span id="qTimer">00:00</span></span>
-      </div>
-    </section>
+    <div class="adminInfo">
+      <input type="text" value="+03196393269" disabled placeholder="Admin Contact" />
+      <input type="text" value="rameeltanveer19@gmail.com" disabled placeholder="Admin Email (for admin use only)" />
+    </div>
   </div>
 
-  <audio id="fireworkSound" src="firework.mp3" preload="auto"></audio>
+  <div id="quizApp" class="hidden">
+    <div class="quizHeader">
+      <span id="progressText"></span>
+      <span id="topicBadge"></span>
+      <span id="globalTimer"></span>
+    </div>
+    <div class="questionBox">
+      <p id="questionText"></p>
+      <div id="optionsList"></div>
+    </div>
+    <div class="quizFooter">
+      <button id="prevBtn" disabled>Previous</button>
+      <button id="nextBtn" disabled>Next</button>
+      <span id="qTimer"></span>
+    </div>
+  </div>
+
+  <audio id="fireworksAudio" src="https://cdn.pixabay.com/download/audio/2023/07/09/audio_38165424.mp3" preload="auto"></audio>
 
   <script src="script.js"></script>
 </body>
