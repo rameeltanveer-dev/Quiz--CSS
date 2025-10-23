@@ -1,42 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CSS Quiz by Rameel Tanveer</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS Quiz</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div id="loginSection">
     <h1>Enter Your Name</h1>
-    <input type="text" id="nameInput" placeholder="Your Name" />
+    <input type="text" id="nameInput" placeholder="Your Name">
     <button id="startWithName">Start Quiz</button>
-    <p id="loginMsg"></p>
+    <p id="loginMsg" class="msg"></p>
 
-    <div class="adminInfo">
-      <input type="text" value="+03196393269" disabled placeholder="Admin Contact" />
-      <input type="text" value="rameeltanveer19@gmail.com" disabled placeholder="Admin Email (for admin use only)" />
-    </div>
+    <h2>Admin Info (For Admin Use Only)</h2>
+    <input type="text" value="03196393269" disabled placeholder="Admin Contact">
+    <input type="text" value="rameeltanveer19@gmail.com" disabled placeholder="Admin Email">
   </div>
+  <span> For admin use only </span>
 
   <div id="quizApp" class="hidden">
-    <div class="quizHeader">
+    <div class="header">
       <span id="progressText"></span>
       <span id="topicBadge"></span>
       <span id="globalTimer"></span>
+      <span id="qTimer"></span>
     </div>
-    <div class="questionBox">
-      <p id="questionText"></p>
-      <div id="optionsList"></div>
-    </div>
-    <div class="quizFooter">
+    <h2 id="questionText"></h2>
+    <div id="optionsList"></div>
+    <div class="navigation">
       <button id="prevBtn" disabled>Previous</button>
       <button id="nextBtn" disabled>Next</button>
-      <span id="qTimer"></span>
     </div>
   </div>
 
-  <audio id="fireworksAudio" src="https://cdn.pixabay.com/download/audio/2023/07/09/audio_38165424.mp3" preload="auto"></audio>
+  <audio id="fireworksAudio" src="https://pixabay.com/users/dragon-studio-38165424/"></audio>
 
   <script src="script.js"></script>
 </body>
