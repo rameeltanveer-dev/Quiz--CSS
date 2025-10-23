@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS Quiz - Rameel</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <section id="loginSection">
+      <h1>Enter Your Name</h1>
+      <input type="text" id="nameInput" placeholder="Type your name here">
+      <button id="startWithName">Start Quiz</button>
+      <p id="loginMsg" class="msg"></p>
+      
+      <!-- Admin contact placeholder -->
+      <h2>Admin Contact</h2>
+      <input type="text" value="03196393269" readonly class="adminField">
+      <p>Admin Email: rameeltanveer19@gmail.com (for admin use only)</p>
+    </section>
+
+    <section id="quizApp" class="hidden">
+      <div class="quiz-header">
+        <span id="progressText"></span>
+        <span id="topicBadge"></span>
+      </div>
+      <div id="questionText" class="question"></div>
+      <div id="optionsList" class="options"></div>
+      <div class="quiz-footer">
+        <button id="prevBtn" disabled>Previous</button>
+        <button id="nextBtn" disabled>Next</button>
+      </div>
+      <div class="timers">
+        <span>Quiz Timer: <span id="globalTimer">00:00</span></span>
+        <span>Question Timer: <span id="qTimer">00:00</span></span>
+      </div>
+    </section>
+  </div>
+
+  <audio id="fireworkSound" src="firework.mp3" preload="auto"></audio>
+
+  <script src="script.js"></script>
+</body>
+</html>
