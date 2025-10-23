@@ -1,79 +1,32 @@
 body {
   font-family: 'Poppins', sans-serif;
-  background: #f4f4f4;
+  background: #f2f2f2;
   text-align: center;
   margin: 0;
   padding: 0;
 }
 
-.container {
-  max-width: 700px;
-  margin: 50px auto;
-  background: #fff;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 0 15px rgba(0,0,0,0.2);
-}
-
 .hidden { display: none; }
 
-input[type=text] {
-  padding: 10px;
-  width: 70%;
-  margin: 10px 0;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
+#loginSection, #quizApp { margin: 50px auto; max-width: 600px; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
 
-.adminField {
-  width: 50%;
-  margin: 10px auto;
-  padding: 8px;
-  border-radius: 5px;
-  border: 1px solid #888;
-  background: #eee;
-  font-weight: bold;
-}
+input { padding: 10px; width: 80%; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; }
 
-button {
-  padding: 10px 20px;
-  margin: 5px;
-  border-radius: 5px;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
-}
+button { padding: 10px 20px; margin: 10px; border: none; border-radius: 5px; cursor: pointer; background: #4CAF50; color: #fff; font-size: 16px; }
 
-button:disabled {
-  background: #ccc;
-  cursor: not-allowed;
-}
+button:disabled { background: #aaa; cursor: not-allowed; }
 
-#questionText {
-  font-size: 20px;
-  margin: 20px 0;
-}
+.quizHeader { display: flex; justify-content: space-between; margin-bottom: 20px; }
 
-.option {
-  background: #eee;
-  margin: 8px 0;
-  padding: 10px;
-  border-radius: 5px;
-  cursor: pointer;
-}
+.questionBox { margin-bottom: 20px; }
 
-.option.correct { background: #4caf50; color: #fff; }
+.option { background: #eee; padding: 10px; margin: 5px 0; border-radius: 5px; cursor: pointer; }
+
+.option.correct { background: #4CAF50; color: #fff; }
+
 .option.wrong { background: #f44336; color: #fff; }
-.option.disabled { pointer-events: none; }
 
-.timers {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 20px;
-}
+.option.disabled { pointer-events: none; opacity: 0.6; }
 
-.quiz-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
+.adminInfo { margin-top: 20px; }
+.adminInfo input { width: 90%; margin: 5px 0; text-align: center; }
