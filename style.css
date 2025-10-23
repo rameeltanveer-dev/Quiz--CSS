@@ -1,32 +1,8 @@
-body {
-  font-family: 'Poppins', sans-serif;
-  background: #f2f2f2;
-  text-align: center;
-  margin: 0;
-  padding: 0;
-}
-
-.hidden { display: none; }
-
-#loginSection, #quizApp { margin: 50px auto; max-width: 600px; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-
-input { padding: 10px; width: 80%; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; }
-
-button { padding: 10px 20px; margin: 10px; border: none; border-radius: 5px; cursor: pointer; background: #4CAF50; color: #fff; font-size: 16px; }
-
-button:disabled { background: #aaa; cursor: not-allowed; }
-
-.quizHeader { display: flex; justify-content: space-between; margin-bottom: 20px; }
-
-.questionBox { margin-bottom: 20px; }
-
-.option { background: #eee; padding: 10px; margin: 5px 0; border-radius: 5px; cursor: pointer; }
-
-.option.correct { background: #4CAF50; color: #fff; }
-
-.option.wrong { background: #f44336; color: #fff; }
-
-.option.disabled { pointer-events: none; opacity: 0.6; }
-
-.adminInfo { margin-top: 20px; }
-.adminInfo input { width: 90%; margin: 5px 0; text-align: center; }
+body{font-family:Arial,sans-serif;text-align:center;padding:20px;}
+.hidden{display:none;}
+button{padding:10px 20px;margin:10px;cursor:pointer;}
+button:disabled{opacity:0.5;cursor:not-allowed;}
+.option{padding:10px;margin:5px;border:1px solid #333;cursor:pointer;}
+.option.correct{background-color:lightgreen;}
+.option.wrong{background-color:#f08080;}
+.option.disabled{pointer-events:none;opacity:0.7;}
